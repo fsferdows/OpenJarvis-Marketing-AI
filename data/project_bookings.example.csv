@@ -1,0 +1,2 @@
+Booking_ID,Timestamp,Customer_Name,Customer_Phone,WhatsApp_Direct_Link,Interest_Level,Preferred_Visit_Date,Preferred_Time_Slot,Unit_Type,Budget_Confirmed,Conversation_Summary,Owner_Alert_Status,Sales_Next_Action,Booking_Status
+MB-P10-101,2026-10-29 11:00:00,Example Customer,01700000000,https://wa.me/8801700000000,🔥 Hot Lead,Friday 11:00 AM,11:00 AM,"1570 sqft (3 Bed, 3 Bath, G+9)",৳48.25 Lakh (36-Mo Installment),Inquired about luxury flat package and booked site visit.,Alert dispatched to WhatsApp,Call client to confirm visit,Site Visit Scheduled

@@ -1,7 +1,7 @@
 # Dependencies
 node_modules/
 
-# Skill install artifacts (npx skills add) — except the Codex plugin marketplace, which is checked in
+# Skill install artifacts (npx skills add)
 .agents/*
 !.agents/plugins/
 .claude/
@@ -12,6 +12,14 @@ skills-lock.json
 .env.*
 !.env.example
 
+# Local Client Database & Logs (Zero Cloud Leaks)
+data/*.csv
+!data/project_bookings.example.csv
+data/*.json
+data/*.md
+*.log
+inject_*.py
+
 # macOS
 .DS_Store
 **/.DS_Store
@@ -20,10 +28,7 @@ skills-lock.json
 * 2.*
 * 2/
 
-# Remotion video project (root only, not skills/video/)
-/video/
-
-# Editor
+# Editor & IDE
 *.swp
 *.swo
 *~
@@ -32,3 +37,4 @@ skills-lock.json
 .partners-pending/
 
 __pycache__/
+*.pyc
