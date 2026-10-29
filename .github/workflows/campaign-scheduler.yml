@@ -1,0 +1,32 @@
+name: Autonomous Meta Ads Campaign Scheduler
+
+on:
+  schedule:
+    # Runs every 6 hours automatically on GitHub's cloud servers
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI anytime
+
+jobs:
+  evaluate-campaign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install requests facebook-business
+
+      - name: Run Autonomous Campaign Scheduler
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID || 'act_221651059226062' }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID || '1398984063295562' }}
+          OWNER_WHATSAPP: ${{ secrets.OWNER_WHATSAPP || '+8801633309081' }}
+        run: |
+          python3 auto_campaign_scheduler.py --status
