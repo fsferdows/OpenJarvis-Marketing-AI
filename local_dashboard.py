@@ -45,6 +45,26 @@ def execute_jarvis_action(user_text: str) -> str:
     """Executes local tool actions or invokes local Ollama model."""
     text_lower = user_text.lower()
 
+    # 0. Action: Check 10-Day Automated Campaign Plan
+    if any(k in text_lower for k in ["plan", "planning", "schedule", "পরিকল্পনা", "10 days", "funnel", "phases", "phase"]):
+        try:
+            import auto_campaign_scheduler
+            curr_day = auto_campaign_scheduler.get_current_campaign_day()
+            curr_phase = auto_campaign_scheduler.get_phase_for_day(curr_day)
+            p_info = auto_campaign_scheduler.PHASES.get(curr_phase, {})
+            return (
+                f"📅 **[10-Day Automated Meta Ads Execution Plan]**\n"
+                f"• Current Progress: **Day {curr_day} of 10** (Oct 29 – Nov 8, 2026)\n"
+                f"• Active Stage: **{p_info.get('name', 'Phase 1')}**\n"
+                f"• Target Window: *{p_info.get('dates')}*\n"
+                f"• Objective: `{p_info.get('objective')}` at **$3.00/day** ($30 total)\n"
+                f"• Funnel Strategy: {p_info.get('description')}\n\n"
+                f"🚀 **Next Automated Milestone**:\n"
+                f"👉 **Day 4 (Nov 2, 2026)**: Auto-transition to **Phase 2 (Retargeting 50%+ Video Viewers)** for direct site visit bookings!"
+            )
+        except Exception as e:
+            return f"Sir, the 10-day execution plan is active in PLANNING.md: {e}"
+
     # 1. Action: Check Meta Ads status
     if any(k in text_lower for k in ["meta ad", "ads status", "campaign", "অ্যাড", "বিজ্ঞাপন", "views", "view"]):
         return (
@@ -179,6 +199,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         td { padding: 12px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         .btn-wa { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: white; padding: 5px 10px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600; }
         .tag-hot { background: #FEE2E2; color: #991B1B; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+
+        .funnel-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 18px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .funnel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
+        .funnel-step { border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: #F8FAFC; }
+        .funnel-step.step-active { border-color: #10B981; background: #ECFDF5; }
+        .funnel-step-title { font-size: 13px; font-weight: 700; color: var(--primary); }
+        .funnel-step-dates { font-size: 11px; color: var(--muted); margin-top: 2px; }
+        .funnel-badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; margin-top: 6px; }
+        .badge-active { background: #10B981; color: white; }
+        .badge-pending { background: #E2E8F0; color: #475569; }
     </style>
 </head>
 <body>
@@ -196,6 +226,34 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <div class="badge">
                 <span class="dot"></span>
                 Meta Ads Boost: Active (Oct 29 - Nov 8)
+            </div>
+        </div>
+
+        <div class="funnel-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="font-size: 14px; font-weight: 700; color: var(--primary);">
+                    📅 10-Day Automated Meta Ads Funnel (Oct 29 – Nov 8, 2026)
+                </div>
+                <div style="font-size: 12px; font-weight: 600; color: #059669; background: #ECFDF5; padding: 4px 10px; border-radius: 20px;">
+                    Day {CURRENT_DAY} of 10 • Auto-Scheduler Armed
+                </div>
+            </div>
+            <div class="funnel-grid">
+                <div class="funnel-step {STEP1_CLASS}">
+                    <div class="funnel-step-title">Phase 1: Video Boost & DM Closer</div>
+                    <div class="funnel-step-dates">Days 1–3 (Oct 29 – Nov 1) · $3.00/day</div>
+                    <span class="funnel-badge {STEP1_BADGE_CLASS}">{STEP1_STATUS}</span>
+                </div>
+                <div class="funnel-step {STEP2_CLASS}">
+                    <div class="funnel-step-title">Phase 2: Retargeting Leads (50%+)</div>
+                    <div class="funnel-step-dates">Days 4–7 (Nov 2 – Nov 5) · $3.00/day</div>
+                    <span class="funnel-badge {STEP2_BADGE_CLASS}">{STEP2_STATUS}</span>
+                </div>
+                <div class="funnel-step {STEP3_CLASS}">
+                    <div class="funnel-step-title">Phase 3: Scarcity & Deal Closer</div>
+                    <div class="funnel-step-dates">Days 8–10 (Nov 6 – Nov 8) · $3.00/day</div>
+                    <span class="funnel-badge {STEP3_BADGE_CLASS}">{STEP3_STATUS}</span>
+                </div>
             </div>
         </div>
 
@@ -217,6 +275,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <button class="btn-send" onclick="sendQuery()">Send Instruction</button>
             </div>
             <div class="quick-actions">
+                <div class="chip" onclick="quickAsk('Explain the 10-day ads plan')">📅 10-Day Plan</div>
                 <div class="chip" onclick="quickAsk('Check my Meta Ads status')">📊 Check Meta Ads</div>
                 <div class="chip" onclick="quickAsk('Show all project visit bookings')">📋 Show All Leads</div>
                 <div class="chip" onclick="quickAsk('Send a test WhatsApp notification to my number')">📲 Test WhatsApp Alert</div>
@@ -396,7 +455,37 @@ class JarvisHandler(BaseHTTPRequestHandler):
             if not bookings:
                 rows_html = "<tr><td colspan='7' style='text-align: center; color: #94A3B8; padding: 25px;'>No bookings recorded yet. Leads from comments and chats will appear here.</td></tr>"
 
-            content = HTML_TEMPLATE.replace("{TOTAL_LEADS}", str(len(bookings))).replace("{TABLE_ROWS}", rows_html)
+            import auto_campaign_scheduler
+            curr_day = auto_campaign_scheduler.get_current_campaign_day()
+            curr_phase = auto_campaign_scheduler.get_phase_for_day(curr_day)
+
+            s1_class = "step-active" if curr_phase == 1 else ""
+            s1_status = "🟢 Active" if curr_phase == 1 else ("✓ Done" if curr_phase > 1 else "Scheduled")
+            s1_badge = "badge-active" if curr_phase == 1 else "badge-pending"
+
+            s2_class = "step-active" if curr_phase == 2 else ""
+            s2_status = "🟢 Active" if curr_phase == 2 else ("✓ Done" if curr_phase > 2 else "⏳ Nov 2 Launch")
+            s2_badge = "badge-active" if curr_phase == 2 else "badge-pending"
+
+            s3_class = "step-active" if curr_phase == 3 else ""
+            s3_status = "🟢 Active" if curr_phase == 3 else "⏳ Nov 6 Launch"
+            s3_badge = "badge-active" if curr_phase == 3 else "badge-pending"
+
+            content = (
+                HTML_TEMPLATE
+                .replace("{TOTAL_LEADS}", str(len(bookings)))
+                .replace("{TABLE_ROWS}", rows_html)
+                .replace("{CURRENT_DAY}", str(curr_day))
+                .replace("{STEP1_CLASS}", s1_class)
+                .replace("{STEP1_STATUS}", s1_status)
+                .replace("{STEP1_BADGE_CLASS}", s1_badge)
+                .replace("{STEP2_CLASS}", s2_class)
+                .replace("{STEP2_STATUS}", s2_status)
+                .replace("{STEP2_BADGE_CLASS}", s2_badge)
+                .replace("{STEP3_CLASS}", s3_class)
+                .replace("{STEP3_STATUS}", s3_status)
+                .replace("{STEP3_BADGE_CLASS}", s3_badge)
+            )
 
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
