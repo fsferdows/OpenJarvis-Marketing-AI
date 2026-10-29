@@ -30,3 +30,4 @@ jobs:
           OWNER_WHATSAPP: ${{ secrets.OWNER_WHATSAPP || '+8801633309081' }}
         run: |
           python3 auto_campaign_scheduler.py --status
+
