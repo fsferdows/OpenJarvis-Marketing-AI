@@ -520,6 +520,17 @@ class JarvisHandler(BaseHTTPRequestHandler):
 
 
 def run_local_server():
+    import threading
+    import auto_campaign_scheduler
+
+    # 1. Start autonomous 24/7 campaign scheduler & comment responder thread
+    scheduler_thread = threading.Thread(
+        target=auto_campaign_scheduler.run_daemon_loop,
+        kwargs={"interval_seconds": 900},
+        daemon=True
+    )
+    scheduler_thread.start()
+
     server_address = ("", PORT)
     httpd = HTTPServer(server_address, JarvisHandler)
     print("=" * 70)
@@ -529,6 +540,8 @@ def run_local_server():
     print(f"Local Model:   {DEFAULT_MODEL} (via Ollama on Metal GPU)")
     print("Owner WA:      +8801633309081")
     print("Zero Cloud:    100% On-Device Execution")
+    print("Video Lock:    Reel ID 1666992078479821 (Post: 122117565777496265)")
+    print("Auto-Funnel:   Active (Phase transitions & comment sales run 24/7)")
     print("=" * 70)
     try:
         httpd.serve_forever()
