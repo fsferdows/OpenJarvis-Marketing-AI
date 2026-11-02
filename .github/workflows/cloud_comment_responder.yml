@@ -1,0 +1,42 @@
+name: 24/7 Cloud Comment Auto-Responder
+
+on:
+  schedule:
+    # Run every 10 minutes 24/7 in GitHub Cloud
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'comment_responder.py'
+      - '.github/workflows/cloud_comment_responder.yml'
+
+concurrency:
+  group: cloud-comment-responder
+  cancel-in-progress: true
+
+jobs:
+  respond_to_comments:
+    runs-on: ubuntu-latest
+    name: Poll & Reply to Facebook Comments
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Cloud Auto-Responder
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+        run: |
+          # Runs continuously for 580 seconds (9.6 minutes), polling every 20s
+          python3 comment_responder.py --loop --interval 20 --duration 580 --all-posts

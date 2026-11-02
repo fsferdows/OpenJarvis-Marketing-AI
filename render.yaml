@@ -1,0 +1,10 @@
+services:
+  - type: worker
+    name: mollik-comment-responder
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python3 comment_responder.py --loop --interval 20 --all-posts
+    envVars:
+      - key: META_ACCESS_TOKEN
+        sync: false
+

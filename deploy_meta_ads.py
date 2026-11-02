@@ -39,6 +39,7 @@ DEFAULT_PAGE_ID = "1398984063295562"  # Mollik Builders LTD Page ID
 DEFAULT_POST_ID = "122117565777496265"  # Exact post ID for Project 10 Reel
 DEFAULT_VIDEO_ID = "1666992078479821"   # Video/Reel ID
 DEFAULT_VIDEO_URL = "https://www.facebook.com/reel/1666992078479821/"
+DEFAULT_WHATSAPP_NUMBER = "+8801633309081"  # FS Ferdows Direct WhatsApp
 
 CAMPAIGN_NAME = "Mollik Builders - Project 10 [10-Day Video Boost]"
 ADSET_NAME = "Dhaka North & Airport Belt - 3km GPS Pins (10 Days @ $3/day)"
@@ -239,7 +240,16 @@ def construct_targeting_spec() -> Dict[str, Any]:
     return targeting
 
 
-def run_dry_run(ad_account_id: str, page_id: str, post_id: str, video_id: str, objective: str, selected_hook: str):
+def run_dry_run(
+    ad_account_id: str,
+    page_id: str,
+    post_id: str,
+    video_id: str,
+    objective: str,
+    selected_hook: str,
+    destination: str = "WHATSAPP",
+    whatsapp_number: str = DEFAULT_WHATSAPP_NUMBER
+):
     """Outputs the complete API payload for review without sending network requests."""
     copy_data = AD_COPIES[selected_hook]
     targeting = construct_targeting_spec()
@@ -276,13 +286,16 @@ def run_dry_run(ad_account_id: str, page_id: str, post_id: str, video_id: str, o
                 "end_time": end_time
             },
             "billing_event": "IMPRESSIONS",
-            "optimization_goal": "POST_ENGAGEMENT" if objective == "OUTCOME_ENGAGEMENT" else "LEAD_GENERATION",
+            "optimization_goal": "CONVERSATIONS" if destination == "WHATSAPP" else ("POST_ENGAGEMENT" if objective == "OUTCOME_ENGAGEMENT" else "LEAD_GENERATION"),
+            "destination_type": "WHATSAPP" if destination == "WHATSAPP" else ("ON_POST" if objective == "OUTCOME_ENGAGEMENT" else "WEBSITE"),
+            "destination_whatsapp_number": whatsapp_number if destination == "WHATSAPP" else None,
             "status": "PAUSED",
             "targeting": targeting
         },
         "creative_and_ad": {
             "ad_name": AD_NAME,
             "object_story_id": f"{page_id}_{post_id}",
+            "call_to_action": "WHATSAPP_MESSAGE" if destination == "WHATSAPP" else "LEARN_MORE",
             "hook_selected": copy_data["title"],
             "headline": copy_data["headline"],
             "description": copy_data["description"]
@@ -299,7 +312,7 @@ def run_dry_run(ad_account_id: str, page_id: str, post_id: str, video_id: str, o
     print(f"  ✓ Existing Video ID: {video_id} (Page: {page_id})")
     print(f"  ✓ Budget & Schedule: ${DAILY_BUDGET_CENTS/100:.2f}/day for {DURATION_DAYS} days (${DAILY_BUDGET_CENTS*DURATION_DAYS/100:.2f} total)")
     print(f"  ✓ Coordinates pin drops: {len(TARGET_LOCATIONS)} locations (3km radius each)")
-    print("  ✓ Demographic: Age 30-55, location_type='home'")
+    print("  ✓ Demographic: Age 30-55 (Living in targeted zones)")
     print("  ✓ Detailed Targeting expansion: DISABLED (advantage_detailed_targeting=0)")
     print("  ✓ Placements: Facebook & Instagram only (Audience Network EXCLUDED)")
     print("  ✓ Initial State: PAUSED (safe review before spend)")
@@ -314,7 +327,9 @@ def deploy_to_meta(
     video_id: str = DEFAULT_VIDEO_ID,
     campaign_id: Optional[str] = None,
     objective: str = "OUTCOME_ENGAGEMENT",
-    hook_key: str = "hook_a_rent_vs_own"
+    hook_key: str = "hook_a_rent_vs_own",
+    destination: str = "WHATSAPP",
+    whatsapp_number: str = DEFAULT_WHATSAPP_NUMBER
 ):
     """Executes the live API calls using facebook-business SDK."""
     print(f"\n[INFO] Initializing FacebookAdsApi for {ad_account_id}...")
@@ -354,12 +369,20 @@ def deploy_to_meta(
         AdSet.Field.start_time: start_time,
         AdSet.Field.end_time: end_time,
         AdSet.Field.billing_event: AdSet.BillingEvent.impressions,
-        AdSet.Field.optimization_goal: (
-            AdSet.OptimizationGoal.post_engagement
-            if objective == "OUTCOME_ENGAGEMENT"
-            else AdSet.OptimizationGoal.lead_generation
+        "optimization_goal": (
+            AdSet.OptimizationGoal.conversations
+            if destination == "WHATSAPP"
+            else (
+                AdSet.OptimizationGoal.post_engagement
+                if objective == "OUTCOME_ENGAGEMENT"
+                else AdSet.OptimizationGoal.lead_generation
+            )
         ),
-        "destination_type": "ON_POST" if objective == "OUTCOME_ENGAGEMENT" else "WEBSITE",
+        "destination_type": (
+            "WHATSAPP"
+            if destination == "WHATSAPP"
+            else ("ON_POST" if objective == "OUTCOME_ENGAGEMENT" else "WEBSITE")
+        ),
         AdSet.Field.bid_strategy: "LOWEST_COST_WITHOUT_CAP",
         AdSet.Field.targeting: targeting,
         AdSet.Field.status: AdSet.Status.paused
@@ -419,6 +442,10 @@ def main():
                         default="hook_a_rent_vs_own", help="Select ad copy hook variant")
     parser.add_argument("--objective", choices=["OUTCOME_ENGAGEMENT", "OUTCOME_LEADS"], default="OUTCOME_ENGAGEMENT",
                         help="Campaign objective (default: OUTCOME_ENGAGEMENT for video boosting)")
+    parser.add_argument("--destination", choices=["ON_POST", "WHATSAPP", "MESSENGER"], default="WHATSAPP",
+                        help="Ad destination (default: WHATSAPP for direct buyer inquiries)")
+    parser.add_argument("--whatsapp-number", type=str, default=DEFAULT_WHATSAPP_NUMBER,
+                        help=f"Direct WhatsApp number (default: {DEFAULT_WHATSAPP_NUMBER})")
     parser.add_argument("--token", type=str, help="Meta User/System User Access Token")
     parser.add_argument("--page-id", type=str, default=DEFAULT_PAGE_ID, help=f"Facebook Page ID (default: {DEFAULT_PAGE_ID})")
     parser.add_argument("--post-id", type=str, default=DEFAULT_POST_ID, help=f"Facebook Post ID (default: {DEFAULT_POST_ID})")
@@ -435,13 +462,15 @@ def main():
     video_id = args.video_id or DEFAULT_VIDEO_ID
     campaign_id = args.campaign_id
     account_id = args.account_id or env.get("ad_account_id") or DEFAULT_AD_ACCOUNT_ID
+    destination = args.destination
+    whatsapp_number = args.whatsapp_number
 
     if not account_id.startswith("act_"):
         account_id = f"act_{account_id}"
 
     # Default to dry-run if --execute is not explicitly passed or if credentials are missing
     if args.dry_run or not args.execute:
-        run_dry_run(account_id, page_id, post_id, video_id, args.objective, args.hook)
+        run_dry_run(account_id, page_id, post_id, video_id, args.objective, args.hook, destination, whatsapp_number)
         if not args.execute:
             print("[NOTE] Ran in dry-run mode. To deploy live, supply ACCESS_TOKEN and pass --execute.")
         return
@@ -453,7 +482,7 @@ def main():
         print("\nPlease supply via --token or set META_ACCESS_TOKEN in .env.")
         sys.exit(1)
 
-    deploy_to_meta(access_token, page_id, post_id, account_id, video_id, campaign_id, args.objective, args.hook)
+    deploy_to_meta(access_token, page_id, post_id, account_id, video_id, campaign_id, args.objective, args.hook, destination, whatsapp_number)
 
 
 if __name__ == "__main__":
