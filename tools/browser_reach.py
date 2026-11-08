@@ -92,6 +92,31 @@ def execute_js_on_tab(tab_idx: Optional[int], js_code: str, browser: str = DEFAU
     return run_osa(osa)
 
 
+def _read_window_text_vision(browser: str = DEFAULT_BROWSER) -> str:
+    """Fallback reader using macOS Vision framework when AppleScript JS is restricted."""
+    try:
+        import os
+        import tempfile
+        import Vision, Cocoa
+        from Foundation import NSURL
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+            tmp_path = tmp.name
+        subprocess.run(["screencapture", "-x", tmp_path], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        url = NSURL.fileURLWithPath_(tmp_path)
+        req = Vision.VNRecognizeTextRequest.alloc().init()
+        req.setRecognitionLevel_(Vision.VNRequestTextRecognitionLevelFast)
+        handler = Vision.VNImageRequestHandler.alloc().initWithURL_options_(url, None)
+        handler.performRequests_error_([req], None)
+        results = [r.text() for r in req.results()]
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass
+        return "\n".join(results)
+    except Exception:
+        return ""
+
+
 def read_tab_content(tab_idx: Optional[int] = None, max_length: int = 4000, browser: str = DEFAULT_BROWSER) -> Dict[str, Any]:
     """Extracts title, URL, and clean innerText from the tab."""
     tabs = get_tabs(browser)
@@ -106,6 +131,8 @@ def read_tab_content(tab_idx: Optional[int] = None, max_length: int = 4000, brow
 
     js = f"document.body ? document.body.innerText.slice(0, {max_length}) : ''"
     text = execute_js_on_tab(tab_idx, js, browser)
+    if not text:
+        text = _read_window_text_vision(browser)[:max_length]
 
     return {
         "status": "ok",

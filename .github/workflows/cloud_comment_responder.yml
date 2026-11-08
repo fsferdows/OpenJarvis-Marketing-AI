@@ -40,3 +40,4 @@ jobs:
         run: |
           # Runs continuously for 580 seconds (9.6 minutes), polling every 20s
           python3 comment_responder.py --loop --interval 20 --duration 580 --all-posts
+
