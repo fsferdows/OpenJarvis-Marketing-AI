@@ -66,15 +66,23 @@ def execute_jarvis_action(user_text: str) -> str:
             return f"Sir, the 10-day execution plan is active in PLANNING.md: {e}"
 
     # 1. Action: Check Meta Ads status
-    if any(k in text_lower for k in ["meta ad", "ads status", "campaign", "অ্যাড", "বিজ্ঞাপন", "views", "view"]):
+    if any(k in text_lower for k in ["meta ad", "ads status", "campaign", "অ্যাড", "বিজ্ঞাপন", "views", "view", "budget", "call", "sms"]):
         return (
-            "📊 **[Meta Ads Campaign Live Status]**\n"
-            "• Campaign: *Mollik Builders - Project 10 [10-Day Video Boost]*\n"
-            "• Delivery: 🟢 **Active** (Oct 29 – Nov 8, 2026)\n"
-            "• Budget: $3.00/day ($30 total for 10 days)\n"
-            "• Targeted Areas: 5 GPS Pin Drops @ 3km radius (Uttara, Mirpur, Tongi, Airport, Khilkhet)\n"
-            "• Performance so far: **122+ Views**, **120 Viewers**, **53 Post Engagements**, **$0.04 Spent**.\n"
-            "• Audience Engagement Rate: **43.4%**."
+            "📊 **[Meta Ads Live Inbound Engines — $3.00/day Total]**\n"
+            "1. 📞 **Direct Call Engine**: 🟢 **Active** ($1.50/day)\n"
+            "   • Campaign: *Mollik Builders - Project 10 [Direct Call-Only Leads Engine]*\n"
+            "   • Action: `CALL_NOW` → `tel:+8801633309081`\n\n"
+            "2. 💬 **WhatsApp & SMS Chat Engine**: 🟢 **Active** ($1.50/day)\n"
+            "   • Campaign: *Mollik Builders - Project 10 [WhatsApp & SMS Messages]*\n"
+            "   • Action: `WHATSAPP_MESSAGE` → `wa.me/8801633309081`\n\n"
+            "🎯 **Audience Targeting**: Age 33–55 Real Buyers in 5 High-Net-Worth Corridors:\n"
+            "• Uttara Core (Sector 3, 4, 7, 9, 11, 13)\n"
+            "• Airport & Kawla\n"
+            "• Nikunja 1 & 2 + Khilkhet\n"
+            "• Mirpur DOHS\n"
+            "• Banani & Baridhara DOHS\n"
+            "*(Tongi factory labor area excluded to protect ad spend)*\n"
+            "🔒 **Video Locked**: Reel 1666992078479821"
         )
 
     # 2. Action: List Leads & Bookings
@@ -225,34 +233,34 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </div>
             <div class="badge">
                 <span class="dot"></span>
-                Meta Ads Boost: Active (Oct 29 - Nov 8)
+                Meta Ads: 🟢 Active ($3.00/day · Calls & WhatsApp)
             </div>
         </div>
 
         <div class="funnel-card">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <div style="font-size: 14px; font-weight: 700; color: var(--primary);">
-                    📅 10-Day Automated Meta Ads Funnel (Oct 29 – Nov 8, 2026)
+                    🎯 Live Real Buyer Inbound Engines ($3.00/day Total)
                 </div>
                 <div style="font-size: 12px; font-weight: 600; color: #059669; background: #ECFDF5; padding: 4px 10px; border-radius: 20px;">
-                    Day {CURRENT_DAY} of 10 • Auto-Scheduler Armed
+                    🟢 2 Active Inbound Channels · Reel 1666992078479821
                 </div>
             </div>
             <div class="funnel-grid">
-                <div class="funnel-step {STEP1_CLASS}">
-                    <div class="funnel-step-title">Phase 1: Video Boost & DM Closer</div>
-                    <div class="funnel-step-dates">Days 1–3 (Oct 29 – Nov 1) · $3.00/day</div>
-                    <span class="funnel-badge {STEP1_BADGE_CLASS}">{STEP1_STATUS}</span>
+                <div class="funnel-step step-active">
+                    <div class="funnel-step-title">📞 Direct Call Engine</div>
+                    <div class="funnel-step-dates">$1.50/day · Direct Phone Calls (+8801633309081)</div>
+                    <span class="funnel-badge badge-active">🟢 Active Now</span>
                 </div>
-                <div class="funnel-step {STEP2_CLASS}">
-                    <div class="funnel-step-title">Phase 2: Retargeting Leads (50%+)</div>
-                    <div class="funnel-step-dates">Days 4–7 (Nov 2 – Nov 5) · $3.00/day</div>
-                    <span class="funnel-badge {STEP2_BADGE_CLASS}">{STEP2_STATUS}</span>
+                <div class="funnel-step step-active">
+                    <div class="funnel-step-title">💬 WhatsApp & SMS Engine</div>
+                    <div class="funnel-step-dates">$1.50/day · Direct WhatsApp Inquiries</div>
+                    <span class="funnel-badge badge-active">🟢 Active Now</span>
                 </div>
-                <div class="funnel-step {STEP3_CLASS}">
-                    <div class="funnel-step-title">Phase 3: Scarcity & Deal Closer</div>
-                    <div class="funnel-step-dates">Days 8–10 (Nov 6 – Nov 8) · $3.00/day</div>
-                    <span class="funnel-badge {STEP3_BADGE_CLASS}">{STEP3_STATUS}</span>
+                <div class="funnel-step step-active">
+                    <div class="funnel-step-title">🤖 24/7 AI Comment Closer</div>
+                    <div class="funnel-step-dates">Instant Bengali & English Sales Rep</div>
+                    <span class="funnel-badge badge-active">🟢 31/31 Replied</span>
                 </div>
             </div>
         </div>
@@ -285,22 +293,22 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <h3>Live Ad Delivery</h3>
-                <div class="val">122+ Views</div>
-                <div class="sub">53 Post Engagements ($0.04 spent)</div>
+                <h3>Active Daily Spend</h3>
+                <div class="val">$3.00 / day</div>
+                <div class="sub">$1.50 Call Engine + $1.50 WhatsApp Engine</div>
             </div>
             <div class="stat-card">
-                <h3>Targeting Precision</h3>
-                <div class="val">5 Pins (3km)</div>
-                <div class="sub">Uttara · Mirpur · Tongi · Airport · Khilkhet</div>
+                <h3>Targeting Corridors</h3>
+                <div class="val">Age 33 – 55</div>
+                <div class="sub">Uttara · Airport · Nikunja · Mirpur DOHS · Banani</div>
             </div>
             <div class="stat-card">
-                <h3>Registered Bookings</h3>
-                <div class="val">{TOTAL_LEADS}</div>
-                <div class="sub">Direct CSV: data/project_bookings.csv</div>
+                <h3>Direct Inbound</h3>
+                <div class="val">Call & WhatsApp</div>
+                <div class="sub">+8801633309081 (Real Buyer Inquiries)</div>
             </div>
             <div class="stat-card">
-                <h3>Executive Price</h3>
+                <h3>Project 10 Units</h3>
                 <div class="val">৳48.25 Lakh</div>
                 <div class="sub">1570 sqft · 3 Bed, 3 Bath · 36m Installment</div>
             </div>
@@ -475,16 +483,6 @@ class JarvisHandler(BaseHTTPRequestHandler):
                 HTML_TEMPLATE
                 .replace("{TOTAL_LEADS}", str(len(bookings)))
                 .replace("{TABLE_ROWS}", rows_html)
-                .replace("{CURRENT_DAY}", str(curr_day))
-                .replace("{STEP1_CLASS}", s1_class)
-                .replace("{STEP1_STATUS}", s1_status)
-                .replace("{STEP1_BADGE_CLASS}", s1_badge)
-                .replace("{STEP2_CLASS}", s2_class)
-                .replace("{STEP2_STATUS}", s2_status)
-                .replace("{STEP2_BADGE_CLASS}", s2_badge)
-                .replace("{STEP3_CLASS}", s3_class)
-                .replace("{STEP3_STATUS}", s3_status)
-                .replace("{STEP3_BADGE_CLASS}", s3_badge)
             )
 
             self.send_response(200)
