@@ -89,8 +89,7 @@ def generate_call_campaign_spec() -> Dict[str, Any]:
 
     targeting = {
         "geo_locations": {
-            "custom_locations": custom_locations,
-            "location_types": ["home"]
+            "custom_locations": custom_locations
         },
         "age_min": 33,
         "age_max": 58,
